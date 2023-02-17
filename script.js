@@ -1,83 +1,110 @@
-let count = 0;
-let gamesWon = 0;
-let gamesLost = 0;
-let gamesTied = 0;
+let currentNumber = '';
+let previousNumber = '';
+let currentOperator = '';
+let decimal = false;
+let negative = false;
 
-let getComputerChoice = () => {
-  switch (Math.floor(Math.random() * 3)) {
-  case 0: return 'Rock';
-  case 1: return 'Paper';
-  default: return 'Scissors';
+const refreshScreen = function() {
+  (currentOperator == '+') ? document.querySelector('#buttonAdd').classList.add('clicked') : document.querySelector('#buttonAdd').classList.remove('clicked');
+  (currentOperator == '-') ? document.querySelector('#buttonSubtract').classList.add('clicked') : document.querySelector('#buttonSubtract').classList.remove('clicked');
+  (currentOperator == '*') ? document.querySelector('#buttonMultiply').classList.add('clicked') : document.querySelector('#buttonMultiply').classList.remove('clicked');
+  (currentOperator == '/') ? document.querySelector('#buttonDivide').classList.add('clicked') : document.querySelector('#buttonDivide').classList.remove('clicked');
+  document.querySelector('.output').textContent = currentNumber;
+  document.querySelector('.previousNumber').textContent = previousNumber + ' ' + currentOperator;
+}
+
+const equals = function(){
+  switch(currentOperator) {
+    case '+':
+      previousNumber = +previousNumber + +currentNumber;
+      break;
+    case '-':
+      previousNumber -= currentNumber;
+      break;
+    case '*':
+      previousNumber *= currentNumber;
+      break;
+    case '/':
+      previousNumber /= currentNumber;
+      break;
   }
+  currentNumber = previousNumber;
+  currentOperator = '';
+  negative = false;
+  decimal = false;
+  refreshScreen();
 }
 
-let game = (computerChoice,userChoice) => {
-  if (!['Rock','Paper','Scissors'].includes(computerChoice)) return 'Error';
-  if (!['Rock','Paper','Scissors'].includes(userChoice)) return 'Cheater';
-  if (computerChoice == userChoice) return 'Tie';
-  if (computerChoice == 'Rock' && userChoice == 'Paper') return 'Win';
-  if (computerChoice == 'Paper' && userChoice == 'Scissors') return 'Win';
-  if (computerChoice == 'Scissors' && userChoice == 'Rock') return 'Win';
-  return 'Loose';
+const percent = function(){
+  currentNumber /= 100;
+  refreshScreen();
 }
 
-let play = (userChoice) => {
-  count++;
-  let computerChoice = getComputerChoice();
-  let results = game(computerChoice,userChoice);
-
-  // add results to result table
-  let myHtmlContent = "<tr><td>"+count+"</td><td>"+results+"</td><td>"+computerChoice+"</td><td>"+userChoice+"</td></tr>";
-  let tableRef = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
-
-  var newRow = tableRef.insertRow(0);
-  newRow.innerHTML = myHtmlContent;
-
-  // accumulate game totals
-  if (results == 'Win') {gamesWon++;}
-  if (results == 'Loose') {gamesLost++;}
-  if (results == 'Tie') {gamesTied++;}
-
-  refreshTotalsTable();
-  if (gamesWon >= 5 || gamesLost >= 5) {endGame()}
+const changeSign = function(){
+  if (!negative) {
+    currentNumber = '-' + currentNumber;
+    negative = true;
+  } else {
+    currentNumber.replace('-','');
+    negative = false;
+  }
+  refreshScreen();
 }
 
-let refreshTotalsTable = () => {
-  document.querySelector('#totalsTable').innerHTML = 
-  `<table>
-    <tr><td>Games Played</td><td>${count}</td></tr>
-    <tr><td>Games Won</td><td>${gamesWon}</td></tr>
-    <tr><td>Games Games Lost</td><td>${gamesLost}</td></tr>
-    <tr><td>Games Tied</td><td>${gamesTied}</td></tr>
-  </table>`;
-
+const decimalClicked = function(){
+  if (!decimal) {
+    currentNumber += '.';
+    decimal = true;
+  }
+  refreshScreen();
 }
 
-let newGame = () => {
-  count = 0;
-  gamesWon = 0;
-  gamesLost = 0;
-  gamesTied = 0;
-  refreshTotalsTable();
-  document.querySelector('#pregame').classList.add('hidden');  
-  document.querySelector('#selection').classList.remove('hidden');  
-  document.querySelector('#results').classList.remove('hidden'); 
-  document.querySelector("#resultsTable > tbody").innerHTML = "<tbody></tbody>";
+const operator = function(operator) {
+  (currentOperator != '') ? equals() : currentOperator = '';
+  previousNumber = currentNumber;
+  currentNumber = '0';
+  negative = false;
+  decimal = false;
+  currentOperator = operator;
+  refreshScreen();
 }
 
-let endGame = () => {
-  if (gamesWon >= 5) {document.querySelector('#header').textContent = 'You Won.';}
-  else {document.querySelector('#header').textContent = 'You Lost.';}
-  document.querySelector('#selection').classList.add('hidden');  
-  document.querySelector('#pregame').classList.remove('hidden');  
+const insertNumber = function(number) {
+  if (currentNumber == '0') {
+    currentNumber = number;
+  } else {
+    currentNumber += number;
+  }
+  refreshScreen();
 }
 
+const clear = function() {
+  currentNumber = 0;
+  previousNumber = 0;
+  currentOperator = ''; 
+  refreshScreen();
+}
 
 window.addEventListener('load', function () {
-  // document.querySelector('#header').textContent = 'The game is played until some wins 5 times.';
-  // document.querySelector('#startNewGame').addEventListener('click', function() { newGame() });
-  // document.getElementById('rock').addEventListener('click', function() { play('Rock') });
-  // document.getElementById('paper').addEventListener('click', function() { play('Paper') });
-  // document.getElementById('scissors').addEventListener('click', function() { play('Scissors') });
-  
+  document.querySelector('#buttonAdd').addEventListener("click", function() {operator('+')});
+  document.querySelector('#buttonSubtract').addEventListener("click", function() {operator('-')});
+  document.querySelector('#buttonMultiply').addEventListener("click", function() {operator('*')});
+  document.querySelector('#buttonDivide').addEventListener("click", function() {operator('/')});
+  document.querySelector('#buttonClear').addEventListener("click", function() {clear()});
+  document.querySelector('#buttonEquals').addEventListener("click", function() {equals()});
+  document.querySelector('#buttonPercent').addEventListener("click", function() {percent()});
+  document.querySelector('#buttonSign').addEventListener("click", function() {changeSign()});
+  document.querySelector('#buttonDecimal').addEventListener("click", function() {decimalClicked()});
+  document.querySelector('#button1').addEventListener("click", function() {insertNumber('1')});
+  document.querySelector('#button2').addEventListener("click", function() {insertNumber('2')});
+  document.querySelector('#button3').addEventListener("click", function() {insertNumber('3')});
+  document.querySelector('#button4').addEventListener("click", function() {insertNumber('4')});
+  document.querySelector('#button5').addEventListener("click", function() {insertNumber('5')});
+  document.querySelector('#button6').addEventListener("click", function() {insertNumber('6')});
+  document.querySelector('#button7').addEventListener("click", function() {insertNumber('7')});
+  document.querySelector('#button8').addEventListener("click", function() {insertNumber('8')});
+  document.querySelector('#button9').addEventListener("click", function() {insertNumber('9')});
+  document.querySelector('#button0').addEventListener("click", function() {insertNumber('0')});
+  clear();  
 })
+

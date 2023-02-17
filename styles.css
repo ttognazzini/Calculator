@@ -56,7 +56,7 @@ body {
   display: inline-grid;
   gap: 1px;
   grid-template-columns: 60px 60px 60px 60px;
-  background-color: #404040;;
+  background-color: #404040;
   border-radius: 10px;
   vertical-align: middle;
   padding: 0px;
@@ -64,10 +64,17 @@ body {
   box-shadow: 20px 20px 20px #888888;
   overflow: hidden;
 }
+.calculator .previousNumber {
+  grid-column: 1/-1;
+  padding-top: 10px;
+  padding-right: 10px;
+  font-size: 20px;
+  color: white;
+  text-align: right;
+}
 .calculator .output {
   grid-column: 1/-1;
-  background-color: #404040;
-  padding-top: 30px;
+  padding-top: 5px;
   padding-right: 10px;
   font-size: 42px;
   color: white;
@@ -81,6 +88,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.calculator .button.clicked {
+  height: 46px;
+  border: 2px solid #404040;
 }
 .calculator .button.orange {
   background-color: rgb(255,159,17);
